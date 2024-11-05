@@ -6,7 +6,7 @@ export default function App() {
   return (
     <SafeAreaView>
         <View className="w-full h-full items-center justify-center p-2">
-            <Text>Hello world!</Text>
+            <Text className="font-pixelifyB">Hello world!</Text>
         </View>
     </SafeAreaView>
   )

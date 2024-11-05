@@ -7,7 +7,10 @@ SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
-    
+    "PixelifySans-Bold": require("../assets/fonts/PixelifySans-Bold.ttf"),
+    "PixelifySans-Medium": require("../assets/fonts/PixelifySans-Medium.ttf"),
+    "PixelifySans-Regular": require("../assets/fonts/PixelifySans-Regular.ttf"),
+    "PixelifySans-SemiBold": require("../assets/fonts/PixelifySans-SemiBold.ttf")
   });
 
   useEffect(() => {

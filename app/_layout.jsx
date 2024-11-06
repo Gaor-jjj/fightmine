@@ -1,6 +1,7 @@
-import { Stack, SplashScreen } from 'expo-router'
-import { useFonts } from 'expo-font'
-import { useEffect } from 'react'
+import { Stack, SplashScreen } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
+import "../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -14,28 +15,28 @@ const RootLayout = () => {
   });
 
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      console.error("Font loading error:", error);
+      return;
+    }
 
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
 
+  // Return null to keep splash screen visible until fonts are loaded
   if (!fontsLoaded) {
-    return null;
-  }
-
-  if (!fontsLoaded && !error) {
     return null;
   }
 
   return (
     <Stack>
-      <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="(auth)" options={{headerShown: false}}/>
-      <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
-  )
-}
+  );
+};
 
-export default RootLayout
+export default RootLayout;

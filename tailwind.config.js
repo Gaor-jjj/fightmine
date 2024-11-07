@@ -10,6 +10,10 @@ module.exports = {
         pixelifyM: ["PixelifySans-Medium", "sans-serif"],
         pixelifySb: ["PixelifySans-SemiBold", "sans-serif"],
         pixelifyB: ["PixelifySans-Bold", "sans-serif"]
+      },
+      colors: {
+        primary: "#C3B091",
+        secondary: "#8E7F6B"
       }
     },
   },

@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const MainButton = ({ title, onPress, gradientFrom = '#C3B091', gradientTo = '#8E7F6B' }) => {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7} className='w-[90%] my-2 shadow-sm'>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.95} className='w-[90%] my-2 shadow-sm'>
         <LinearGradient
             colors={[gradientFrom, gradientTo]}
             start={{ x: 0, y: 0 }}

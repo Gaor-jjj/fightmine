@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const home = () => {
+const achievements = () => {
   return (
     <View>
-      <Text>home</Text>
+      <Text>achievements</Text>
     </View>
   )
 }
 
-export default home
+export default achievements

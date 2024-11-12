@@ -11,6 +11,7 @@ export default function TabLayout() {
           height: 80, // Increased height of the tab bar
           backgroundColor: 'black', // Tab bar background color set to black
         },
+        headerShown: false
       }}
     >
       <Tabs.Screen

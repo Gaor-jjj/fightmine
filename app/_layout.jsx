@@ -1,6 +1,7 @@
 import { Stack, SplashScreen } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { StatusBar } from 'react-native'; // Import StatusBar
 import "../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -31,11 +32,16 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      {/* Set the StatusBar globally */}
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+      
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </>
   );
 };
 

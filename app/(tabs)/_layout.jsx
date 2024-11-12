@@ -1,43 +1,96 @@
-// app/(tabs)/_layout.jsx
-import React, { useState } from 'react';
-import { View, Pressable, Image, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
+import { Pressable, Text, Image } from 'react-native';
 
-export default function CustomTabLayout() {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState('Home');
-
-  const tabs = [
-    { name: 'Home', icon: require('../../assets/icons/home.png'), screen: 'home' },
-    { name: 'Achievements', icon: require('../../assets/icons/achievements.png'), screen: 'achievements' },
-    { name: 'Fight', icon: require('../../assets/icons/fight.png'), screen: 'fight' },
-  ];
-
-  const handleTabPress = (tab) => {
-    setActiveTab(tab.name);
-    router.push(tab.screen);
-  };
-
+export default function TabLayout() {
   return (
-    <View className="flex-1">
-      {/* Content area */}
-      <View className="flex-1">
-        {/* Add your content here or use children prop if wrapping other components */}
-      </View>
-
-      {/* Custom Tab Bar */}
-      <View className="flex-row justify-around bg-gray-900 p-4">
-        {tabs.map((tab) => (
-          <Pressable
-            key={tab.name}
-            onPress={() => handleTabPress(tab)}
-            className={`flex items-center ${activeTab === tab.name ? 'text-blue-500' : 'text-gray-400'}`}
-          >
-            <Image source={tab.icon} className="w-6 h-6" />
-            <Text className="mt-1 text-xs">{tab.name}</Text>
-          </Pressable>
-        ))}
-      </View>
-    </View>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: 'blue', // Active tab title color
+        tabBarInactiveTintColor: 'gray', // Inactive tab title color
+        tabBarStyle: {
+          height: 80, // Increased height of the tab bar
+          backgroundColor: 'black', // Tab bar background color set to black
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarButton: (props) => (
+            <Pressable
+              {...props}
+              className={`flex-1 justify-center items-center ${
+                props.accessibilityState.selected ? 'bg-gray-700' : ''
+              }`}
+            >
+              <Image
+                source={require('../../assets/icons/home.png')}
+                className={`w-6 h-6 ${props.accessibilityState.selected ? 'tint-blue-500' : 'tint-gray-400'}`}
+              />
+              <Text
+                className={`${
+                  props.accessibilityState.selected ? 'text-blue-500' : 'text-gray-500'
+                } text-xs mt-1`}
+              >
+                Home
+              </Text>
+            </Pressable>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="achievements"
+        options={{
+          title: 'Achievements',
+          tabBarButton: (props) => (
+            <Pressable
+              {...props}
+              className={`flex-1 justify-center items-center ${
+                props.accessibilityState.selected ? 'bg-gray-700' : ''
+              }`}
+            >
+              <Image
+                source={require('../../assets/icons/achievements.png')}
+                className={`w-6 h-6 ${props.accessibilityState.selected ? 'tint-blue-500' : 'tint-gray-400'}`}
+              />
+              <Text
+                className={`${
+                  props.accessibilityState.selected ? 'text-blue-500' : 'text-gray-500'
+                } text-xs mt-1`}
+              >
+                Achievements
+              </Text>
+            </Pressable>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="fight"
+        options={{
+          title: 'Fight',
+          tabBarButton: (props) => (
+            <Pressable
+              {...props}
+              className={`flex-1 justify-center items-center ${
+                props.accessibilityState.selected ? 'bg-gray-700' : ''
+              }`}
+            >
+              <Image
+                source={require('../../assets/icons/fight.png')}
+                className={`w-6 h-6 ${props.accessibilityState.selected ? 'tint-blue-500' : 'tint-gray-400'}`}
+              />
+              <Text
+                className={`${
+                  props.accessibilityState.selected ? 'text-blue-500' : 'text-gray-500'
+                } text-xs mt-1`}
+              >
+                Fight
+              </Text>
+            </Pressable>
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

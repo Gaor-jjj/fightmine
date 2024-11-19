@@ -35,7 +35,7 @@ export default function Login() {
                 onChangeText={(e) => setForm({ ...form, email: e })}
               />
               <InputField
-                placeholder="password"
+                placeholder="Password"
                 value={form.password}
                 onChangeText={(e) => setForm({ ...form, password: e })}
                 isPassword

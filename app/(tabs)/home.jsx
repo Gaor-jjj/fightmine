@@ -1,12 +1,19 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { View, Text, SafeAreaView } from 'react-native';
+import Header from '../../components/Header'; // Import your header component
 
-const home = () => {
+export default function Home() {
   return (
-    <View>
-      <Text>home</Text>
-    </View>
-  )
-}
+    <SafeAreaView className="flex-1">
+      <View className="flex-1">
+        <Header /> 
 
-export default home
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-2xl font-bold text-gray-700">
+            Welcome to the Fantasy World!
+          </Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}

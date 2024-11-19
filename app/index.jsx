@@ -13,17 +13,22 @@ export default function App() {
       style={{ width: '100%', height: '100%' }}
       resizeMode="cover"
     >
-      {/* Set status bar style */}
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <SafeAreaView className="flex-1">
-        <View className="w-full h-full items-center justify-around p-2">
-          <Image source={images.logo} resizeMode='contain' className="w-[100%] h-16"/>
-          <View className="w-full items-center">
-            <MainButton title="Log In" onPress={() => router.push('/home')}/>
-            <MainButton title="Register" onPress={() => router.push('/home')}/>
+        <View className="w-full h-full p-2">
+          {/* Logo container */}
+          <View className="w-full h-[300px] items-center justify-center">
+            <Image source={images.logo} resizeMode="contain" className="w-[70%] h-full" />
+          </View>
+
+          {/* Main buttons */}
+          <View className="flex-1 items-center justify-center">
+            <MainButton title="Log In" onPress={() => router.push('/login')} />
+            <MainButton title="Register" onPress={() => router.push('/register')} />
           </View>
         </View>
       </SafeAreaView>
     </ImageBackground>
   );
 }
+

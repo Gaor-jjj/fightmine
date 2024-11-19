@@ -38,7 +38,7 @@ export default function Register() {
                 />
                 <InputField
                 label='Password'
-                placeholder="example@email.com"
+                placeholder="Example@email.com"
                 value={form.email}
                 onChangeText={(e) => setForm({ ...form, email: e })}
                 />

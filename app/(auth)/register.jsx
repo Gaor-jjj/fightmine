@@ -31,16 +31,19 @@ export default function Register() {
             {/* Login form */}
             <View className="flex-1 items-center justify-center">
                 <InputField
+                label='Username'
                 placeholder="Username"
                 value={form.email}
                 onChangeText={(e) => setForm({ ...form, username: e })}
                 />
                 <InputField
+                label='Password'
                 placeholder="example@email.com"
                 value={form.email}
                 onChangeText={(e) => setForm({ ...form, email: e })}
                 />
                 <InputField
+                label='Password'
                 placeholder="Password"
                 value={form.password}
                 onChangeText={(e) => setForm({ ...form, password: e })}

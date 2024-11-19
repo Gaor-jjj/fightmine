@@ -30,12 +30,14 @@ export default function Login() {
             {/* Login form */}
             <View className="flex-1 items-center justify-center">
               <InputField
-                placeholder="example@email.com"
+                label='Email'
+                placeholder="Example@email.com"
                 value={form.email}
                 onChangeText={(e) => setForm({ ...form, email: e })}
               />
               <InputField
-                placeholder="Password"
+                label='Password'
+                placeholder="•••••••••••"
                 value={form.password}
                 onChangeText={(e) => setForm({ ...form, password: e })}
                 isPassword

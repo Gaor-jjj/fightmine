@@ -4,12 +4,13 @@ import ProfilePicture from './ProfilePicture';
 import Wealth from './Wealth';
 import Power from './Power';
 
-export default function Header() {
+export default function Header({ coinCount }) {
   return (
     <View className="w-full h-56 bg-brown-500 p-3 flex flex-row items-center">
       <ProfilePicture className="w-36 h-36" />
       <View className="ml-3 flex flex-col justify-between h-4/5">
-        <Wealth className="w-32 h-20" />
+        {/* Pass coinCount to Wealth */}
+        <Wealth className="w-32 h-20" initialCount={coinCount} />
         <Power className="w-32 h-20" />
       </View>
       <View className="ml-3 flex flex-col justify-between h-4/5">

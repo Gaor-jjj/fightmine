@@ -2,10 +2,15 @@ import { View, ImageBackground, StatusBar, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MainButton from '../components/MainButton';
 import { images } from '../constants';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
+import { useGlobalContext } from '../context/GlobalProvider';
 
 export default function App() {
   const router = useRouter();
+
+  const {isLoading, isLoggedIn} = useGlobalContext();
+
+  if(!isLoading && isLoggedIn) return <Redirect href='/home'/>
 
   return (
     <ImageBackground

@@ -1,18 +1,38 @@
-import { View, ImageBackground, StatusBar, Image } from 'react-native';
+import { View, ImageBackground, StatusBar, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MainButton from '../../components/MainButton';
 import { images } from '../../constants';
 import { useRouter } from 'expo-router';
 import InputField from '../../components/InputField';
 import { useState } from 'react';
+import { createUser } from '../../lib/appwrite'
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 export default function Register() {
     const router = useRouter();
+    const { setUser, setIsLoggedIn } = useGlobalContext();
     const [form, setForm] = useState({
       username: '',  
       email: '',
       password: '',
     });
+
+    const onSubmit = async () => {
+      console.log('Form Data:', form);
+      if(!form.username || !form.email || !form.password) {
+          Alert.alert('Error', 'Please fill in all the fields')
+          return;
+      }
+      try {
+          const result = await createUser(form.email, form.password, form.username);
+          if (!result) throw new Error('User creation failed');
+          setUser(result)
+          setIsLoggedIn(true)
+          router.replace('/home')
+      } catch (error) {
+          Alert.alert('Error', error.message)
+      }
+    }
   
     return (
       <ImageBackground
@@ -33,11 +53,11 @@ export default function Register() {
                 <InputField
                 label='Username'
                 placeholder="Username"
-                value={form.email}
+                value={form.username}
                 onChangeText={(e) => setForm({ ...form, username: e })}
                 />
                 <InputField
-                label='Password'
+                label='Email'
                 placeholder="Example@email.com"
                 value={form.email}
                 onChangeText={(e) => setForm({ ...form, email: e })}
@@ -49,7 +69,7 @@ export default function Register() {
                 onChangeText={(e) => setForm({ ...form, password: e })}
                 isPassword
                 />
-                <MainButton title="Register" onPress={() => router.push('/home')} />
+                <MainButton title="Register" onPress={onSubmit} />
             </View>
           </View>
         </SafeAreaView>

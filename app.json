@@ -36,6 +36,7 @@
     },
     "assetBundlePatterns": [
       "assets/*"
-    ]
+    ],
+    "newArchEnabled": true
   }
 }

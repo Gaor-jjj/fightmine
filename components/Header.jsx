@@ -6,24 +6,30 @@ import Power from './Power';
 
 export default function Header({ coinCount }) {
   return (
-    <View className="w-full h-56 bg-brown-500 p-3 flex flex-row items-center">
-      <ProfilePicture className="w-36 h-36" />
-      <View className="ml-3 flex flex-col justify-between h-4/5">
-        {/* Pass coinCount to Wealth */}
-        <Wealth className="w-32 h-20" initialCount={coinCount} />
-        <Power className="w-32 h-20" />
+    <View className="w-full h-36 bg-brown-500 p-3 flex flex-row items-center">
+      {/* Profile Picture */}
+      <ProfilePicture />
+
+      {/* Wealth and Power */}
+      <View className="flex-1 h-full flex flex-col justify-between ml-3">
+        <Wealth initialCount={coinCount}/>
+        <Power />
       </View>
-      <View className="ml-3 flex flex-col justify-between h-4/5">
-        <View className="w-14 h-20 bg-brown-700 rounded-xl flex justify-center items-center p-1 shadow-lg">
+
+      {/* Shop and Settings */}
+      <View className="flex flex-col justify-between h-full ml-3">
+        <View className="w-12 flex-1 bg-secondary rounded-xl justify-center items-center mb-2">
           <Image
             source={require('../assets/images/shop.png')}
-            className="w-12 h-12 rounded-xl"
+            className="w-9 h-9"
+            resizeMode="contain"
           />
         </View>
-        <View className="w-14 h-14 bg-brown-700 rounded-xl flex justify-center items-center p-1 shadow-lg">
+        <View className="w-12 h-1/3 bg-secondary rounded-xl justify-center items-center">
           <Image
             source={require('../assets/images/settings.png')}
-            className="w-12 h-12 rounded-xl"
+            className="w-8 h-8"
+            resizeMode="contain"
           />
         </View>
       </View>

@@ -32,8 +32,7 @@ export default function TabLayout() {
 
   return (
     <>
-      <StatusBar style="light" backgroundColor="#C3B091" />
-      
+      <StatusBar style="light" backgroundColor="#C3B091" />     
       {/* Add padding top based on the status bar height */}
       <View style={{ flex: 1, paddingTop: statusBarHeight }}>
         <Tabs

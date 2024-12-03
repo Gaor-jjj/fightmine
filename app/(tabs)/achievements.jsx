@@ -15,7 +15,7 @@ const achievements = () => {
             className='flex-1 justify-center items-center'
           >
             <View>
-
+            
             </View>
           </ImageBackground>
         </View>

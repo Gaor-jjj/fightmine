@@ -1,66 +1,152 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, ImageBackground, TouchableOpacity, Image } from 'react-native';
-import Header from '../../components/Header'; // Import your custom Header component
-import BuildingComponent from '../../components/BuildingComponent'; // Import the BuildingComponent
-import Wealth from '../../components/Wealth'; // Import the Wealth component
+import { SafeAreaView, View, ImageBackground, TouchableOpacity, Image, Alert } from 'react-native';
+import Header from '../../components/Header';
+import BuildingComponent from '../../components/BuildingComponent';
+import { getCurrentUser, fetchBuildings, updateUserBuildingCount, updateGold } from '../../lib/appwrite';
 
 export default function Home() {
-  // Initialize coin count to 100
-  const [coinCount, setCoinCount] = useState(100);
+    const [gold, setGold] = useState(0);
+    const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [buildings, setBuildings] = useState([]);
+    const [userData, setUserData] = useState(null);
 
-  // Building data (you can also use the imported JSON for this)
-  const buildings = [
-    { id: 1, ownedCount: 5, profit: 2 },
-    { id: 2, ownedCount: 0, profit: 3 },
-    { id: 3, ownedCount: 3, profit: 1 },
-  ];
+    // Calculate total profit based on buildings
+    const totalProfit = buildings.reduce(
+        (total, building) => total + building.ownedCount * building.profit,
+        0
+    );
 
-  // Calculate total profit from all owned buildings
-  const totalProfit = buildings.reduce((total, building) => total + (building.ownedCount * building.profit), 0);
+    // Fetch buildings and user data
+    useEffect(() => {
+        async function initialize() {
+            try {
+                const fetchedBuildings = await fetchBuildings();
+                const currentUser = await getCurrentUser();
 
-  // Function to increment coin count based on profit every second
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCoinCount(prevCoinCount => prevCoinCount + totalProfit);
-    }, 1000);
+                if (currentUser) {
+                    setUserId(currentUser.$id);
+                    setUserData(currentUser);
+                    setGold(currentUser.gold);
+                }
 
-    // Cleanup the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [totalProfit]);
+                const mappedBuildings = fetchedBuildings.map((building) => {
+                    const ownedCount = currentUser
+                        ? currentUser[building.title.toLowerCase().replace(' ', '_')] || 0
+                        : 0;
+                    return {
+                        id: building.id,
+                        title: building.title,
+                        price: building.price,
+                        profit: building.profit,
+                        ownedCount, // Dynamically set from user data
+                    };
+                });
 
-  // Function to increment coin count when the coin image is pressed
-  const handleCoinPress = () => {
-    setCoinCount(coinCount + 1);
-  };
+                setBuildings(mappedBuildings);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error initializing buildings or user:', error);
+                setLoading(false);
+            }
+        }
+        initialize();
+    }, []);
 
-  return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1">
-        {/* Pass the coinCount state to Header */}
-        <Header coinCount={coinCount} />
+    // Add total profit to gold every second
+    useEffect(() => {
+        if (!userId || totalProfit <= 0) return;
 
-        {/* Container for the background image */}
-        <View className="h-1/4">
-          <ImageBackground
-            source={require('../../assets/images/minebg.png')}
-            resizeMode="cover"
-            className="flex-1 justify-center items-center"
-          >
-            {/* Coin image in the center with TouchableOpacity */}
-            <TouchableOpacity onPress={handleCoinPress}>
-              <Image source={require('../../assets/images/coin.png')} className="w-24 h-24" />
-            </TouchableOpacity>
-          </ImageBackground>
-        </View>
+        const interval = setInterval(async () => {
+            try {
+                setGold((prevGold) => {
+                    const updatedGold = prevGold + totalProfit;
+                    updateGold(userId, updatedGold);
+                    return updatedGold;
+                });
+            } catch (error) {
+                console.error('Error updating gold with profit:', error);
+            }
+        }, 1000);
 
-        {/* Rest of the content */}
-        <View className="flex-1 justify-center items-center p-4">
-          {/* Replace the welcome text with the BuildingComponent */}
-          <BuildingComponent id={1} ownedCount={5} />
-          <BuildingComponent id={2} ownedCount={0} />
-          <BuildingComponent id={3} ownedCount={3} />
-        </View>
-      </View>
-    </SafeAreaView>
-  );
+        return () => clearInterval(interval);
+    }, [userId, totalProfit]);
+
+    // Handle clicking the coin to earn more gold
+    const handleCoinPress = async () => {
+        if (loading || !userId) return;
+
+        try {
+            setGold((prevGold) => {
+                const newGoldValue = prevGold + 1;
+                updateGold(userId, newGoldValue);
+                return newGoldValue;
+            });
+        } catch (error) {
+            console.error('Error updating gold on click:', error);
+        }
+    };
+
+    // Handle purchasing a building
+    const handlePurchaseBuilding = async (building) => {
+        const mineField = building.title.toLowerCase().replace(' ', '_');
+
+        if (!userData || !mineField) return;
+
+        if (gold < building.price) {
+            Alert.alert('Not enough gold', 'You do not have enough gold to purchase this building.');
+            return;
+        }
+
+        try {
+            const newGold = gold - building.price;
+            const newMineCount = (userData[mineField] || 0) + 1;
+
+            await updateUserBuildingCount(userId, mineField, newMineCount, newGold);
+
+            setUserData((prev) => ({
+                ...prev,
+                [mineField]: newMineCount,
+                gold: newGold,
+            }));
+            setGold(newGold);
+
+            setBuildings((prevBuildings) =>
+                prevBuildings.map((b) =>
+                    b.id === building.id ? { ...b, ownedCount: newMineCount } : b
+                )
+            );
+        } catch (error) {
+            console.error('Error purchasing building:', error);
+        }
+    };
+
+    return (
+        <SafeAreaView className="flex-1">
+            <View className="flex-1">
+                <Header coinCount={gold} />
+                <View className="h-1/4">
+                    <ImageBackground
+                        source={require('../../assets/images/minebg.png')}
+                        resizeMode="cover"
+                        className="flex-1 justify-center items-center"
+                    >
+                        <TouchableOpacity onPress={handleCoinPress}>
+                            <Image source={require('../../assets/images/coin.png')} className="w-24 h-24" />
+                        </TouchableOpacity>
+                    </ImageBackground>
+                </View>
+                <View className="flex-1 justify-center items-center p-4">
+                    {buildings.map((building) => (
+                        <BuildingComponent
+                            key={building.id}
+                            building={building}
+                            ownedCount={building.ownedCount}
+                            onPurchase={handlePurchaseBuilding}
+                        />
+                    ))}
+                </View>
+            </View>
+        </SafeAreaView>
+    );
 }

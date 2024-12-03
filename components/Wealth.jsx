@@ -1,8 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, Text } from 'react-native';
+import { getCurrentUser, subscribeToGoldUpdates } from '../lib/appwrite';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const Wealth = ({ initialCount }) => {
+const Wealth = () => {
+  const [gold, setGold] = useState(0);
+
+  useEffect(() => {
+    let unsubscribe;
+
+    async function initialize() {
+      try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser || currentUser.gold === undefined) {
+          throw new Error('User or gold value not found');
+        }
+
+        setGold(currentUser.gold);
+
+        unsubscribe = subscribeToGoldUpdates(currentUser.$id, (newGold) => {
+          setGold(newGold);
+        });
+      } catch (error) {
+        console.error('Error initializing Wealth component:', error);
+      }
+    }
+
+    initialize();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
+
   return (
     <View
       className="w-full bg-secondary rounded-xl flex-1 flex-row items-center justify-start p-2 mb-2"
@@ -31,7 +63,7 @@ const Wealth = ({ initialCount }) => {
         resizeMode="contain"
         style={{ zIndex: 0 }} // Ensuring the image is below the shadow
       />
-      <Text className="text-white text-lg font-pixelifyB ml-2">{initialCount}</Text>
+      <Text className="text-white text-lg font-pixelifyB ml-2">{gold}</Text>
     </View>
   );
 };

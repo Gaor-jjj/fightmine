@@ -17,16 +17,16 @@ const BuildingComponent = ({ building, ownedCount = 0, onPurchase }) => {
                 <Image source={buildingIcon} className="w-8 h-8" />
             </View>
             <View className="flex-1">
-                <Text className="text-lg font-bold text-black">
+                <Text className="text-lg font-pixelifyB text-black">
                     {building?.title || 'No Title'}
                 </Text>
-                <Text className="text-sm text-gray-600">
+                <Text className="text-sm font-pixelify text-gray-600">
                     Price: ${building?.price || 0}
                 </Text>
-                <Text className="text-sm text-gray-600">Profit</Text>
+                <Text className="text-sm font-pixelify text-gray-600">Profit: {building?.profit}/s</Text>
             </View>
-            <View className="bg-white p-2 rounded-lg">
-                <Text className="text-xl font-bold">{ownedCount}</Text>
+            <View className="bg-white py-2 px-4 rounded-lg">
+                <Text className="text-xl font-pixelify">{ownedCount}</Text>
             </View>
         </TouchableOpacity>
     );

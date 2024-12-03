@@ -53,24 +53,25 @@ export default function Home() {
         initialize();
     }, []);
 
-    // Add total profit to gold every second
     useEffect(() => {
         if (!userId || totalProfit <= 0) return;
-
+    
         const interval = setInterval(async () => {
             try {
+                // Use a function to ensure you're getting the latest gold value
                 setGold((prevGold) => {
                     const updatedGold = prevGold + totalProfit;
-                    updateGold(userId, updatedGold);
-                    return updatedGold;
+                    updateGold(userId, updatedGold); // Update gold in the database
+                    return updatedGold; // Return the updated gold for the next render
                 });
             } catch (error) {
                 console.error('Error updating gold with profit:', error);
             }
         }, 1000);
-
+    
         return () => clearInterval(interval);
-    }, [userId, totalProfit]);
+    }, [userId, totalProfit]);  // Dependency on userId and totalProfit ensures it updates properly
+    
 
     // Handle clicking the coin to earn more gold
     const handleCoinPress = async () => {
@@ -123,7 +124,7 @@ export default function Home() {
 
     return (
         <SafeAreaView className="flex-1">
-            <View className="flex-1">
+            <View className="flex-1 bg-neutral">
                 <Header coinCount={gold} />
                 <View className="h-1/4">
                     <ImageBackground
@@ -132,7 +133,7 @@ export default function Home() {
                         className="flex-1 justify-center items-center"
                     >
                         <TouchableOpacity onPress={handleCoinPress}>
-                            <Image source={require('../../assets/images/coin.png')} className="w-24 h-24" />
+                            <Image source={require('../../assets/images/coin.png')} className="w-32 h-32" />
                         </TouchableOpacity>
                     </ImageBackground>
                 </View>

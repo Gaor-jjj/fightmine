@@ -19,6 +19,7 @@ module.exports = {
           700: '#8E7F6B',
           900: '#3D2206', 
         },
+        neutral: '#E8DCCA',
       }
     },
   },

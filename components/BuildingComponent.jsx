@@ -1,48 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from 'react-native';
-
-// Adjust the import path to point to the correct folder location for building icon
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import buildingIcon from '../assets/icons/building.png';
 
-// Adjust the import path for buildings.json
-import buildingsData from '../data/buildings.json';
+const BuildingComponent = ({ building, ownedCount = 0, onPurchase }) => {
+    const backgroundColor = ownedCount > 0 ? 'bg-green-500' : 'bg-gray-300';
 
-const BuildingComponent = ({ id, ownedCount = 0 }) => {
-  const [building, setBuilding] = useState(null);
-
-  useEffect(() => {
-    // Fetch building data from the JSON file based on the id prop
-    const buildingData = buildingsData.find((building) => building.id === id);
-    setBuilding(buildingData);
-  }, [id]);
-
-  if (!building) {
-    return null; // If data is still loading, you can return null or a loader.
-  }
-
-  // Determine the background color based on whether the user owns any of this building
-  const backgroundColor = ownedCount > 0 ? 'bg-green-500' : 'bg-gray-300';
-
-  return (
-    <View className={`flex flex-row items-center ${backgroundColor} rounded-lg p-3 mb-4`}>
-      {/* Left side with building icon */}
-      <View className="bg-white rounded-lg p-3 mr-4">
-        <Image source={buildingIcon} className="w-8 h-8" />
-      </View>
-
-      {/* Middle content with title, price, and profit */}
-      <View className="flex-1">
-        <Text className="text-lg font-semibold">{building.title}</Text>
-        <Text className="text-sm text-gray-600">Price: ${building.price}</Text>
-        <Text className="text-sm text-gray-600">Profit: ${building.profit}/min</Text>
-      </View>
-
-      {/* Right side with the number of buildings owned */}
-      <View className="bg-white rounded-lg p-2">
-        <Text className="text-xl font-bold">{ownedCount}</Text>
-      </View>
-    </View>
-  );
+    return (
+        <TouchableOpacity
+            className={`p-5 mb-3 ${backgroundColor} flex flex-row items-center rounded-xl`}
+            onPress={() => {
+                console.log('Building clicked:', building);
+                onPurchase(building); // Call the onPurchase prop passed from Home
+            }}
+        >
+            <View className="bg-white p-3 mr-4 rounded-lg">
+                <Image source={buildingIcon} className="w-8 h-8" />
+            </View>
+            <View className="flex-1">
+                <Text className="text-lg font-bold text-black">
+                    {building?.title || 'No Title'}
+                </Text>
+                <Text className="text-sm text-gray-600">
+                    Price: ${building?.price || 0}
+                </Text>
+                <Text className="text-sm text-gray-600">Profit</Text>
+            </View>
+            <View className="bg-white p-2 rounded-lg">
+                <Text className="text-xl font-bold">{ownedCount}</Text>
+            </View>
+        </TouchableOpacity>
+    );
 };
 
 export default BuildingComponent;

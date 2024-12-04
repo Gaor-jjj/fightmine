@@ -38,8 +38,8 @@ const BuildingComponent = ({ building, ownedCount = 0, onPurchase }) => {
                     Profit: {building?.profit}/s
                 </Text>
             </View>
-            <View className="bg-white py-2 px-4 rounded-lg">
-                <Text className="text-xl font-pixelify">{ownedCount}</Text>
+            <View className="bg-white py-2 px-4 min-w-14 rounded-lg">
+                <Text className="text-xl text-center font-pixelify">{ownedCount}</Text>
             </View>
         </View>
     </LinearGradient>

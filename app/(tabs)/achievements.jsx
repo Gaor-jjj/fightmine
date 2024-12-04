@@ -7,7 +7,7 @@ import { icons } from '../../constants';
 
 const achievements = () => {
   return (
-    <SafeAreaView className='flex-1 bg'>
+    <SafeAreaView className='flex-1 bg-neutral'>
       <View className='flex-1'>
         <Header />
         <View className="h-1/4">

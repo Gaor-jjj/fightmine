@@ -3,9 +3,10 @@ import { SafeAreaView, View, ImageBackground, TouchableOpacity, Image, Alert } f
 import Header from '../../components/Header';
 import BuildingComponent from '../../components/BuildingComponent';
 import { getCurrentUser, fetchBuildings, updateUserBuildingCount, updateGold } from '../../lib/appwrite';
+import { useGold } from '../../context/GoldProvider';  // Import the useGold hook
 
 export default function Home() {
-    const [gold, setGold] = useState(0);
+    const { gold, setGold } = useGold();  // Use gold from context and the setter function
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [buildings, setBuildings] = useState([]);
@@ -27,7 +28,7 @@ export default function Home() {
                 if (currentUser) {
                     setUserId(currentUser.$id);
                     setUserData(currentUser);
-                    setGold(currentUser.gold);
+                    setGold(currentUser.gold || 0);  // Initialize gold from the user data in context, ensure it's a valid number
                 }
 
                 const mappedBuildings = fetchedBuildings.map((building) => {
@@ -55,10 +56,10 @@ export default function Home() {
 
     useEffect(() => {
         if (!userId || totalProfit <= 0) return;
-    
+
         const interval = setInterval(async () => {
             try {
-                // Use a function to ensure you're getting the latest gold value
+                // Update gold based on profit
                 setGold((prevGold) => {
                     const updatedGold = prevGold + totalProfit;
                     updateGold(userId, updatedGold); // Update gold in the database
@@ -68,10 +69,9 @@ export default function Home() {
                 console.error('Error updating gold with profit:', error);
             }
         }, 1000);
-    
+
         return () => clearInterval(interval);
     }, [userId, totalProfit]);  // Dependency on userId and totalProfit ensures it updates properly
-    
 
     // Handle clicking the coin to earn more gold
     const handleCoinPress = async () => {
@@ -110,7 +110,7 @@ export default function Home() {
                 [mineField]: newMineCount,
                 gold: newGold,
             }));
-            setGold(newGold);
+            setGold(newGold);  // Update gold in context
 
             setBuildings((prevBuildings) =>
                 prevBuildings.map((b) =>
@@ -125,7 +125,7 @@ export default function Home() {
     return (
         <SafeAreaView className="flex-1">
             <View className="flex-1 bg-neutral">
-                <Header coinCount={gold} />
+                <Header />
                 <View className="h-1/4">
                     <ImageBackground
                         source={require('../../assets/images/minebg.png')}
@@ -133,7 +133,7 @@ export default function Home() {
                         className="flex-1 justify-center items-center"
                     >
                         <TouchableOpacity onPress={handleCoinPress}>
-                            <Image source={require('../../assets/images/coin.png')} className="w-32 h-32" />
+                            <Image source={require('../../assets/images/coin.png')} className="w-20 h-20" />
                         </TouchableOpacity>
                     </ImageBackground>
                 </View>

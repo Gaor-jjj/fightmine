@@ -1,12 +1,16 @@
-import { View, Text } from 'react-native'
+import { View, SafeAreaView } from 'react-native'
 import React from 'react'
+import Header from '../../components/Header'
 
-const fight = () => {
+const Fight = () => {
   return (
-    <View>
-      <Text>fight</Text>
-    </View>
+    <SafeAreaView className='flex-1 bg-neutral'>
+      <View className='flex-1'>
+        <Header />
+      </View>
+    </SafeAreaView>
   )
 }
 
-export default fight
+export default Fight
+

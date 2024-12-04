@@ -7,14 +7,15 @@ import { useRouter } from 'expo-router';
 import { useGlobalContext } from '../context/GlobalProvider';
 import { signOut } from '../lib/appwrite';
 import { icons } from '../constants';
+import { useGold } from '../context/GoldProvider';
 
-export default function Header({ coinCount }) {
+export default function Header() {
   const [isModalVisible, setModalVisible] = useState(false);
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
-  const [scaleSettings, setScaleSettings] = useState(new Animated.Value(1)); // Create scale animation for settings icon
+  const { gold } = useGold();
+  const [scaleSettings] = useState(new Animated.Value(1));
   const router = useRouter();
 
-  // Function to toggle modal visibility
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -26,38 +27,32 @@ export default function Header({ coinCount }) {
     router.replace('/login')
   }
 
-    //Animation
-    // Function to handle press in (scale up for the pressed icon)
-    const handlePressIn = (scale) => {
-      Animated.spring(scale, {
-        toValue: 1.2,
-        friction: 4,
-        useNativeDriver: true,
-      }).start();
-    };
-    // Function to handle press out (reset scale)
-    const handlePressOut = (scale) => {
-      Animated.spring(scale, {
-        toValue: 1, 
-        friction: 4,
-        useNativeDriver: true,
-      }).start();
-    };
+  const handlePressIn = (scale) => {
+    Animated.spring(scale, {
+      toValue: 1.2,
+      friction: 4,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = (scale) => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 4,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
     <>
-      {/* Hide StatusBar when modal is open */}
       <View className="w-full h-36 bg-primary p-3 flex flex-row items-center">
-        {/* Profile Picture */}
         <ProfilePicture />
 
-        {/* Wealth and Power */}
         <View className="flex-1 h-full flex flex-col justify-between ml-3">
-          <Wealth initialCount={coinCount} />
+          <Wealth />
           <Power />
         </View>
 
-        {/* Shop and Settings */}
         <View className="flex flex-col justify-between h-full ml-3">
           <View className="w-12 flex-1 bg-secondary rounded-xl justify-center items-center mb-2">
             <Image
@@ -68,35 +63,33 @@ export default function Header({ coinCount }) {
           </View>
           <Pressable
             onPress={() => {
-              handlePressIn(scaleSettings);  // Trigger scale up on press
-              toggleModal(); // Toggle modal visibility
-            }} // Toggle modal on press
+              handlePressIn(scaleSettings);
+              toggleModal();
+            }}
             className="w-12 h-1/3 bg-secondary rounded-xl justify-center items-center"
-            onPressIn={() => handlePressIn(scaleSettings)} // Trigger scale up on press
-            onPressOut={() => handlePressOut(scaleSettings)} // Reset scale on release
+            onPressIn={() => handlePressIn(scaleSettings)} 
+            onPressOut={() => handlePressOut(scaleSettings)}
           >
             <Animated.Image
-            source={icons.settings}  // Assuming the settings icon is in your icons file
-            style={{
-              transform: [{ scale: scaleSettings }], // Apply scaling animation to the settings icon
-            }}
-            className="w-8 h-8"
+              source={icons.settings}  
+              style={{
+                transform: [{ scale: scaleSettings }],
+              }}
+              className="w-8 h-8"
             />
           </Pressable>
         </View>
       </View>
 
-      {/* Modal for Settings */}
       <Modal
         animationType="fade"
-        transparent={true} // Makes the modal background transparent
+        transparent={true}
         visible={isModalVisible}
-        onRequestClose={toggleModal} // Close modal when the back button is pressed
+        onRequestClose={toggleModal}
       >
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          {/* Semi-Transparent Overlay */}
           <Pressable
-            onPress={toggleModal} // Close modal when overlay is pressed
+            onPress={toggleModal}
             style={{
               position: 'absolute',
               top: 0,
@@ -106,10 +99,8 @@ export default function Header({ coinCount }) {
               backgroundColor: 'rgba(0, 0, 0, 0.5)'
             }}
           />
-          {/* Modal Content */}
           <View className="w-80 bg-primary rounded-lg p-6">
             <Text className="text-xl font-pixelify mb-4 text-center">Settings</Text>
-            {/* Logout Button */}
             <Pressable
               onPress={() => {
                 toggleModal();
@@ -120,7 +111,6 @@ export default function Header({ coinCount }) {
               <Text className="text-white text-center font-pixelifyB">Logout</Text>
             </Pressable>
 
-            {/* Close Modal Button */}
             <Pressable
               onPress={toggleModal}
               className="mt-4 bg-secondary py-4 px-4 rounded-lg"
@@ -133,3 +123,4 @@ export default function Header({ coinCount }) {
     </>
   );
 }
+

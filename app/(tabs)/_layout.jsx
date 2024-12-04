@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Pressable, Animated, Image, View, Platform, StatusBar as RNStatusBar } from 'react-native';
 import icons from '../../constants/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
   // Create animated values for each tab icon
   const scaleHome = new Animated.Value(1);
   const scaleAchievements = new Animated.Value(1);
@@ -27,13 +29,10 @@ export default function TabLayout() {
     }).start();
   };
 
-  // Calculate the status bar height for padding
-  const statusBarHeight = Platform.OS === 'ios' ? RNStatusBar.currentHeight || 20 : RNStatusBar.currentHeight;
-
   return (
     <>
       {/* Add a background for the status bar */}
-      <View style={{ height: statusBarHeight, backgroundColor: '#C3B091' }}>
+      <View style={{ height: insets.top, backgroundColor: '#C3B091' }}>
         <StatusBar style="light" translucent />
       </View>
 
@@ -43,7 +42,8 @@ export default function TabLayout() {
           screenOptions={{
             tabBarStyle: {
               backgroundColor: '#C3B091',
-              height: 55,
+              height: 60 + insets.bottom,
+              paddingBottom: insets.bottom
             },
             headerShown: false,
           }}

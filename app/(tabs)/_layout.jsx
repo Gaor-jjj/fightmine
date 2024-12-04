@@ -21,20 +21,24 @@ export default function TabLayout() {
   // Function to handle press out (reset scale)
   const handlePressOut = (scale) => {
     Animated.spring(scale, {
-      toValue: 1, 
+      toValue: 1,
       friction: 4,
       useNativeDriver: true,
     }).start();
   };
 
   // Calculate the status bar height for padding
-  const statusBarHeight = Platform.OS === 'android' ? RNStatusBar.currentHeight : 0;
+  const statusBarHeight = Platform.OS === 'ios' ? RNStatusBar.currentHeight || 20 : RNStatusBar.currentHeight;
 
   return (
     <>
-      <StatusBar style="light" backgroundColor="#C3B091" />     
-      {/* Add padding top based on the status bar height */}
-      <View style={{ flex: 1, paddingTop: statusBarHeight }}>
+      {/* Add a background for the status bar */}
+      <View style={{ height: statusBarHeight, backgroundColor: '#C3B091' }}>
+        <StatusBar style="light" translucent />
+      </View>
+
+      {/* Main content with padding for the status bar */}
+      <View style={{ flex: 1 }}>
         <Tabs
           screenOptions={{
             tabBarStyle: {

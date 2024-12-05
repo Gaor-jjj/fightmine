@@ -4,6 +4,7 @@ import { Pressable, Animated, Image, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { GoldProvider } from '../../context/GoldProvider'; // Import the GoldProvider
+import { AchievementProvider } from '../../context/AchievementProvider';
 
 import icons from '../../constants/icons';
 
@@ -42,6 +43,7 @@ export default function TabLayout() {
       {/* Main content with padding for the status bar */}
       <View style={{ flex: 1 }}>
         <GoldProvider>
+        <AchievementProvider>
           <Tabs
             screenOptions={{
               tabBarStyle: {
@@ -155,6 +157,7 @@ export default function TabLayout() {
               }}
             />
           </Tabs>
+        </AchievementProvider>
         </GoldProvider>
       </View>
     </>

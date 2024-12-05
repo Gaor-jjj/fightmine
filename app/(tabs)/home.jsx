@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, ImageBackground, TouchableOpacity, Image, Alert } from 'react-native';
 import Header from '../../components/Header';
 import BuildingComponent from '../../components/BuildingComponent';
-import { getCurrentUser, fetchBuildings, updateUserBuildingCount, updateGold } from '../../lib/appwrite';
-import { useGold } from '../../context/GoldProvider';  // Import the useGold hook
+import { getCurrentUser, fetchBuildings, updateUserBuildingCount } from '../../lib/appwrite';
+import { useGold } from '../../context/GoldProvider';
 
 export default function Home() {
-    const { gold, setGold } = useGold();  // Use gold from context and the setter function
+    const { gold, updateGold, isLoading } = useGold();
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [buildings, setBuildings] = useState([]);
     const [userData, setUserData] = useState(null);
 
-    // Calculate total profit based on buildings
     const totalProfit = buildings.reduce(
         (total, building) => total + building.ownedCount * building.profit,
         0
     );
 
-    // Fetch buildings and user data
     useEffect(() => {
         async function initialize() {
             try {
@@ -28,7 +26,6 @@ export default function Home() {
                 if (currentUser) {
                     setUserId(currentUser.$id);
                     setUserData(currentUser);
-                    setGold(currentUser.gold || 0);  // Initialize gold from the user data in context, ensure it's a valid number
                 }
 
                 const mappedBuildings = fetchedBuildings.map((building) => {
@@ -40,7 +37,7 @@ export default function Home() {
                         title: building.title,
                         price: building.price,
                         profit: building.profit,
-                        ownedCount, // Dynamically set from user data
+                        ownedCount,
                     };
                 });
 
@@ -57,42 +54,22 @@ export default function Home() {
     useEffect(() => {
         if (!userId || totalProfit <= 0) return;
 
-        const interval = setInterval(async () => {
-            try {
-                // Update gold based on profit
-                setGold((prevGold) => {
-                    const updatedGold = prevGold + totalProfit;
-                    updateGold(userId, updatedGold); // Update gold in the database
-                    return updatedGold; // Return the updated gold for the next render
-                });
-            } catch (error) {
-                console.error('Error updating gold with profit:', error);
-            }
+        const interval = setInterval(() => {
+            updateGold(totalProfit, 'add');
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [userId, totalProfit]);  // Dependency on userId and totalProfit ensures it updates properly
+    }, [userId, totalProfit, updateGold]);
 
-    // Handle clicking the coin to earn more gold
-    const handleCoinPress = async () => {
-        if (loading || !userId) return;
+    const handleCoinPress = useCallback(() => {
+        if (loading || isLoading) return;
+        updateGold(1, 'add');
+    }, [loading, isLoading, updateGold]);
 
-        try {
-            setGold((prevGold) => {
-                const newGoldValue = prevGold + 1;
-                updateGold(userId, newGoldValue);
-                return newGoldValue;
-            });
-        } catch (error) {
-            console.error('Error updating gold on click:', error);
-        }
-    };
-
-    // Handle purchasing a building
-    const handlePurchaseBuilding = async (building) => {
+    const handlePurchaseBuilding = useCallback(async (building) => {
         const mineField = building.title.toLowerCase().replace(' ', '_');
 
-        if (!userData || !mineField) return;
+        if (!userData || !mineField || isLoading) return;
 
         if (gold < building.price) {
             Alert.alert('Not enough gold', 'You do not have enough gold to purchase this building.');
@@ -100,17 +77,15 @@ export default function Home() {
         }
 
         try {
-            const newGold = gold - building.price;
+            await updateGold(building.price, 'subtract');
             const newMineCount = (userData[mineField] || 0) + 1;
 
-            await updateUserBuildingCount(userId, mineField, newMineCount, newGold);
+            await updateUserBuildingCount(userId, mineField, newMineCount, gold - building.price);
 
             setUserData((prev) => ({
                 ...prev,
                 [mineField]: newMineCount,
-                gold: newGold,
             }));
-            setGold(newGold);  // Update gold in context
 
             setBuildings((prevBuildings) =>
                 prevBuildings.map((b) =>
@@ -119,8 +94,10 @@ export default function Home() {
             );
         } catch (error) {
             console.error('Error purchasing building:', error);
+            // Revert the gold subtraction if there's an error
+            updateGold(building.price, 'add');
         }
-    };
+    }, [userData, isLoading, gold, userId, updateGold]);
 
     return (
         <SafeAreaView className="flex-1">
@@ -151,3 +128,4 @@ export default function Home() {
         </SafeAreaView>
     );
 }
+

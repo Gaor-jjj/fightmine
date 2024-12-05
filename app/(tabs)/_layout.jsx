@@ -142,6 +142,18 @@ export default function TabLayout() {
                 },
               }}
             />
+            <Tabs.Screen
+              name="shop/index"
+              options={{
+                href: null, // This disables it from appearing in the tab bar
+              }}
+            />
+            <Tabs.Screen
+              name="profile/index"
+              options={{
+                href: null, // This disables it from appearing in the tab bar
+              }}
+            />
           </Tabs>
         </GoldProvider>
       </View>

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getCurrentUser, subscribeToGoldUpdates } from '../lib/appwrite';
+import { getCurrentUser, subscribeToGoldUpdates, updateGold as updateGoldInDB } from '../lib/appwrite';
 
 const GoldContext = createContext();
 
@@ -8,8 +8,9 @@ export const useGold = () => {
 };
 
 export const GoldProvider = ({ children }) => {
-  const [gold, setGold] = useState(null);  // Start with null to indicate uninitialized state
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  const [gold, setGold] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     let unsubscribe;
@@ -21,13 +22,14 @@ export const GoldProvider = ({ children }) => {
         if (!currentUser || currentUser.gold === undefined) {
           throw new Error('User or gold value not found');
         }
+        setUserId(currentUser.$id);
         setGold(currentUser.gold);
         unsubscribe = subscribeToGoldUpdates(currentUser.$id, (newGold) => {
           setGold(newGold);
         });
       } catch (error) {
         console.error('Error initializing gold context:', error);
-        setGold(0); // Fallback to 0
+        setGold(0);
       } finally {
         console.log("Loading finished");
         setIsLoading(false);
@@ -42,11 +44,19 @@ export const GoldProvider = ({ children }) => {
       }
     };
   }, []);
-  
+
+  const updateGold = async (amount, operation = 'add') => {
+    if (userId) {
+      const newGold = operation === 'add' ? gold + amount : gold - amount;
+      setGold(newGold);
+      await updateGoldInDB(userId, newGold);
+    }
+  };
 
   return (
-    <GoldContext.Provider value={{ gold, setGold, isLoading }}>
+    <GoldContext.Provider value={{ gold, updateGold, isLoading }}>
       {children}
     </GoldContext.Provider>
   );
 };
+

@@ -54,13 +54,13 @@ export default function Header() {
         </View>
 
         <View className="flex flex-col justify-between h-full ml-3">
-          <View className="w-12 flex-1 bg-secondary rounded-xl justify-center items-center mb-2">
+          <Pressable onPress={() => router.push('/shop')} className="w-12 flex-1 bg-secondary rounded-xl justify-center items-center mb-2">
             <Image
               source={require('../assets/images/shop.png')}
               className="w-9 h-9"
               resizeMode="contain"
             />
-          </View>
+          </Pressable>
           <Pressable
             onPress={() => {
               handlePressIn(scaleSettings);

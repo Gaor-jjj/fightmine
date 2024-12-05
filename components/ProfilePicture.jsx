@@ -1,9 +1,16 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 const ProfilePicture = () => {
+  const router = useRouter();
+
   return (
+    <TouchableOpacity
+      onPress={() => router.push('/profile')}
+      activeOpacity={0.7} // Adjust the opacity effect on press
+    >
     <View className="h-full aspect-square bg-secondary rounded-xl overflow-hidden">
       {/* Inner Shadow */}
       <LinearGradient
@@ -29,6 +36,7 @@ const ProfilePicture = () => {
         style={{ zIndex: 0 }}
       />
     </View>
+    </TouchableOpacity>
   );
 };
 

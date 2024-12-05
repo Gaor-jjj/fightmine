@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, SafeAreaView, ImageBackground, TouchableOpacity, Animated, Text, FlatList, Image } from 'react-native';
+import { useGold } from '../../context/GoldProvider'; // Import the GoldContext hook
 import Header from '../../components/Header';
 import HPComponent from '../../components/HPComponent';
 import MonsterComponent from '../../components/MonsterComponent';
@@ -17,6 +18,9 @@ const Fight = () => {
   const [monsters, setMonsters] = useState([]);
   const [fadeAnimation] = useState(new Animated.Value(1)); // Initial opacity set to 1 (fully visible)
   const [messagePosition] = useState(new Animated.Value(-100)); // Starts off-screen below (negative value)
+
+  // Gold context values
+  const { gold, updateGold, isLoading } = useGold(); // Access gold and updateGold function from context
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,12 +53,19 @@ const Fight = () => {
     setCurrentHP((prevHP) => {
       const newHP = Math.max(prevHP - power, 0);
       if (newHP === 0) {
-        triggerDeathSequence();
+        onMonsterDeath(); // Trigger both death sequence and loot addition
       }
       return newHP;
     });
 
     triggerShakeAnimation();
+  };
+
+  const triggerAddLoot = () => {
+    if (selectedMonster && selectedMonster.gold) {
+      updateGold(selectedMonster.gold, 'add'); // Fetch and add gold at the same time
+      console.log(`Added ${selectedMonster.gold} gold!`); // Optional: for debugging
+    }
   };
 
   const triggerDeathSequence = () => {
@@ -86,9 +97,10 @@ const Fight = () => {
     }).start();
 
     setCongratsVisible(true);
+
+    // Set timeout for hiding the congrats message and respawning the monster
     setTimeout(() => {
-      setCongratsVisible(false);
-      setIsClickable(true);
+      setCongratsVisible(false); // Hide congrats message
 
       // Reset position after the message disappears
       Animated.timing(messagePosition, {
@@ -97,11 +109,18 @@ const Fight = () => {
         useNativeDriver: false,
       }).start();
 
-      // Respawn monster with full HP after the animation completes
+      // Respawn monster with full HP
       if (selectedMonster) {
         setCurrentHP(selectedMonster.hp);
       }
-    }, 2000); // The total duration of 2 seconds
+
+      setIsClickable(true); // Allow clicks again
+    }, 2000); // Total duration for the sequence is 2 seconds
+  };
+
+  const onMonsterDeath = () => {
+    triggerDeathSequence(); // Trigger death sequence animations
+    triggerAddLoot(); // Add loot (gold) immediately after monster death
   };
 
   const triggerShakeAnimation = () => {

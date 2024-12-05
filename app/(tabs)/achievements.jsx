@@ -53,18 +53,15 @@ const Achievements = () => {
           {loading ? (
             <ActivityIndicator size="large" color="#fff" />
           ) : (
-            achievements.map((achievement) => {
-              const isCompleted = getAchievementStatus(achievement.id, completedAchievements);
-              return (
-                <AchievementComponent
-                  key={achievement.id}
-                  title={achievement.title}
-                  description={achievement.description}
-                  points={achievement.points}
-                  isCompleted={isCompleted}
-                />
-              );
-            })
+            achievements.map((achievement) => (
+              <AchievementComponent
+                key={achievement.id}
+                title={achievement.title}
+                description={achievement.description}
+                points={achievement.points}
+                isCompleted={getAchievementStatus(achievement.id)}
+              />
+            ))
           )}
         </ScrollView>
       </View>
@@ -73,3 +70,4 @@ const Achievements = () => {
 };
 
 export default Achievements;
+

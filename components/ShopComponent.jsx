@@ -30,7 +30,7 @@ const ShopComponent = () => {
                 <Text className="text-sm font-pixelify text-white">
                     Item description
                 </Text>
-                <Text>
+                <Text className="text-sm">
 
                 </Text>
             </View>

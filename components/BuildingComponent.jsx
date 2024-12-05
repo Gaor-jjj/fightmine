@@ -25,7 +25,7 @@ const BuildingComponent = ({ building, ownedCount = 0, onPurchase }) => {
     >
         <View className="p-4 flex flex-row items-center">
             <View className="bg-white p-3 mr-4 rounded-lg">
-                <Image source={buildingIcon} className="w-8 h-8" />
+                <Image source={buildingIcon} className="w-8 h-8" resizeMode='contain'/>
             </View>
             <View className="flex-1">
                 <Text className="text-lg font-pixelifyB text-white">

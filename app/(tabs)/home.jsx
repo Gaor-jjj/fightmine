@@ -114,7 +114,7 @@ export default function Home() {
                         </TouchableOpacity>
                     </ImageBackground>
                 </View>
-                <View className="flex-1 justify-center items-center p-4">
+                <View className="flex-1 items-center p-4">
                     {buildings.map((building) => (
                         <BuildingComponent
                             key={building.id}

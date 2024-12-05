@@ -4,6 +4,7 @@ import Header from '../../components/Header'
 import { images } from '../../constants'
 import { LinearGradient } from 'expo-linear-gradient';
 import { icons } from '../../constants';
+import AchievementComponent from '../../components/AchievementComponent';
 
 const achievements = () => {
   return (
@@ -37,9 +38,13 @@ const achievements = () => {
                 resizeMode="contain"
                 style={{ zIndex: 0 }}
               />
-              <Text className='font-pixelify text-yellow-500 text-4xl'>400</Text>
+              <Text className='font-pixelify text-yellow-500 text-4xl'>100</Text>
             </View>
           </ImageBackground>
+        </View>
+        <View className='flex-1 items-center p-4'>
+          <AchievementComponent/>
+          <AchievementComponent/>
         </View>
       </View>
     </SafeAreaView>

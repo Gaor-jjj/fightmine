@@ -8,7 +8,9 @@ import profilebg from '../assets/images/profilebg.png'
 import goblin from "../assets/images/Goblin.png"
 import ogre from "../assets/images/ogre.gif"
 import mech from "../assets/images/mech.png"
-import elderBeast from "../assets/images/elderBeast.png"
+import elderbeast from "../assets/images/elderBeast.png"
+import activeMonster from "../assets/images/activeMonster.png"
+import defaultMonster from "../assets/images/defaultMonster.png"
 
 export default {
     splash,
@@ -21,5 +23,7 @@ export default {
     goblin,
     ogre,
     mech,
-    elderBeast
+    elderbeast,
+    activeMonster,
+    defaultMonster
 }

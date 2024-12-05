@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, ImageBackground, TouchableOpacity, Animated, Text, FlatList, Image } from 'react-native';
-import { useGold } from '../../context/GoldProvider'; // Import the GoldContext hook
-import Header from '../../components/Header';
-import HPComponent from '../../components/HPComponent';
-import MonsterComponent from '../../components/MonsterComponent';
-import { getCurrentUser, getMonsters } from '../../lib/appwrite';
-import { images } from '../../constants';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  SafeAreaView,
+  ImageBackground,
+  TouchableOpacity,
+  Animated,
+  Text,
+  FlatList,
+  Image,
+} from "react-native";
+import { useGold } from "../../context/GoldProvider"; // Import the GoldContext hook
+import Header from "../../components/Header";
+import HPComponent from "../../components/HPComponent";
+import MonsterComponent from "../../components/MonsterComponent";
+import { getCurrentUser, getMonsters } from "../../lib/appwrite";
+import { images } from "../../constants";
 
 const Fight = () => {
   const [currentHP, setCurrentHP] = useState(null);
@@ -40,7 +49,7 @@ const Fight = () => {
           setCurrentHP(defaultMonster.hp);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -63,13 +72,13 @@ const Fight = () => {
 
   const triggerAddLoot = () => {
     if (selectedMonster && selectedMonster.gold) {
-      updateGold(selectedMonster.gold, 'add'); // Fetch and add gold at the same time
+      updateGold(selectedMonster.gold, "add"); // Fetch and add gold at the same time
       console.log(`Added ${selectedMonster.gold} gold!`); // Optional: for debugging
     }
   };
 
   const triggerDeathSequence = () => {
-    setIsClickable(false);
+    setIsClickable(false); // Disable monster switching during death animation
 
     // Reset message position to off-screen (below the screen)
     messagePosition.setValue(-100);
@@ -114,7 +123,7 @@ const Fight = () => {
         setCurrentHP(selectedMonster.hp);
       }
 
-      setIsClickable(true); // Allow clicks again
+      setIsClickable(true); // Allow clicks again after death animation is done
     }, 2000); // Total duration for the sequence is 2 seconds
   };
 
@@ -164,7 +173,10 @@ const Fight = () => {
               <TouchableOpacity disabled={!isClickable} onPress={fightMonster}>
                 <Animated.View style={[shakeStyle, { opacity: fadeAnimation }]}>
                   <Image
-                    source={images[selectedMonster.name.toLowerCase()]} // Display the selected monster's image
+                    source={
+                      images[selectedMonster.name.toLowerCase()] ||
+                      images.defaultMonster
+                    }
                     className="h-40 w-40"
                     resizeMode="contain"
                   />
@@ -181,14 +193,14 @@ const Fight = () => {
             {congratsVisible && (
               <Animated.View
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   bottom: messagePosition, // Animated position to slide it up and down
                   left: 0,
                   right: 0,
                   paddingVertical: 10,
-                  backgroundColor: '#3E2723', // Brown-900 background
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  backgroundColor: "#3E2723", // Brown-900 background
+                  alignItems: "center",
+                  justifyContent: "center",
                   borderRadius: 10, // Rounded corners for the "bar" shape
                 }}
               >
@@ -202,19 +214,25 @@ const Fight = () => {
 
         {/* Monster selection */}
         <View className="flex-1 mt-2">
-          <Text className="text-center text-xl font-bold mb-4">Choose a Monster</Text>
+          <Text className="text-center text-xl font-bold mb-4">
+            Choose a Monster
+          </Text>
 
           <FlatList
             data={monsters}
             renderItem={({ item }) => (
               <MonsterComponent
                 monster={item}
-                activeMonsterImage={images[item?.name.toLowerCase()]}
+                activeMonster={selectedMonster?.id} // Pass the ID of the selected monster to check if this one is active
                 onFight={(selected) => {
-                  setSelectedMonster(selected);
-                  setCurrentHP(selected.hp); // Reset the HP of the selected monster
-                  setMonsterHP(selected.hp); // Set the max HP (same as initial HP)
+                  if (isClickable) {
+                    // Only allow selection if clickable
+                    setSelectedMonster(selected);
+                    setCurrentHP(selected.hp); // Reset the HP of the selected monster
+                    setMonsterHP(selected.hp); // Set the max HP (same as initial HP)
+                  }
                 }}
+                isSelectable={isClickable} // Disable the selection button if not clickable
               />
             )}
             keyExtractor={(item) => item?.id}

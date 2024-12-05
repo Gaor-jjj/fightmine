@@ -1,49 +1,110 @@
 import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, ImageBackground, Image, TouchableOpacity, Animated, Text } from 'react-native';
+import { View, SafeAreaView, ImageBackground, TouchableOpacity, Animated, Text, FlatList, Image } from 'react-native';
 import Header from '../../components/Header';
 import HPComponent from '../../components/HPComponent';
-import images from '../../constants/images';
-import { getCurrentUser } from '../../lib/appwrite';
+import MonsterComponent from '../../components/MonsterComponent';
+import { getCurrentUser, getMonsters } from '../../lib/appwrite';
+import { images } from '../../constants';
 
 const Fight = () => {
-  const [currentHP, setCurrentHP] = useState(500); // Initial HP for the dragon
-  const [power, setPower] = useState(null); // User's power
-  const [congratsVisible, setCongratsVisible] = useState(false); // Show congratulations
-  const [isClickable, setIsClickable] = useState(true); // Manage clickability
-  const [shakeAnimation] = useState(new Animated.Value(0)); // Animation value for shaking
+  const [currentHP, setCurrentHP] = useState(null);
+  const [monsterHP, setMonsterHP] = useState(null);
+  const [power, setPower] = useState(null);
+  const [congratsVisible, setCongratsVisible] = useState(false);
+  const [isClickable, setIsClickable] = useState(true);
+  const [shakeAnimation] = useState(new Animated.Value(0));
+  const [selectedMonster, setSelectedMonster] = useState(null);
+  const [monsters, setMonsters] = useState([]);
+  const [fadeAnimation] = useState(new Animated.Value(1)); // Initial opacity set to 1 (fully visible)
+  const [messagePosition] = useState(new Animated.Value(-100)); // Starts off-screen below (negative value)
 
-  // Fetch user power from Appwrite
   useEffect(() => {
-    const fetchPower = async () => {
+    const fetchData = async () => {
       try {
         const user = await getCurrentUser();
         if (user && user.power !== undefined) {
           setPower(user.power);
         }
+
+        const monsterData = await getMonsters();
+        setMonsters(monsterData);
+
+        if (monsterData.length > 0) {
+          const defaultMonster = monsterData[0];
+          setSelectedMonster(defaultMonster);
+          setMonsterHP(defaultMonster.hp);
+          setCurrentHP(defaultMonster.hp);
+        }
       } catch (error) {
-        console.error('Error fetching user power:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchPower();
+    fetchData();
   }, []);
 
-  const fightDragon = () => {
-    if (!isClickable || power === null) return; // Prevent clicks if not clickable
+  const fightMonster = () => {
+    if (!isClickable || power === null || !selectedMonster) return;
 
     setCurrentHP((prevHP) => {
-      const newHP = Math.max(prevHP - power, 0); // Deduct power, no negative HP
+      const newHP = Math.max(prevHP - power, 0);
       if (newHP === 0) {
-        triggerDeathSequence(); // Trigger animation and reset on death
+        triggerDeathSequence();
       }
       return newHP;
     });
+
+    triggerShakeAnimation();
   };
 
   const triggerDeathSequence = () => {
-    setIsClickable(false); // Disable clicking
+    setIsClickable(false);
 
-    // Start shaking animation
+    // Reset message position to off-screen (below the screen)
+    messagePosition.setValue(-100);
+
+    // Start fade-out animation (1.5 seconds)
+    Animated.sequence([
+      Animated.timing(fadeAnimation, {
+        toValue: 0, // Fade to 0 (fully transparent)
+        duration: 1500, // 1.5 seconds fade-out
+        useNativeDriver: true,
+      }),
+      Animated.delay(500), // Wait for 0.5 seconds after fade-out
+      Animated.timing(fadeAnimation, {
+        toValue: 1, // Fade back in (fully visible)
+        duration: 500, // Fade in duration (0.5 seconds)
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Push the area down and show congrats message with slide-up animation
+    Animated.timing(messagePosition, {
+      toValue: 0, // Slide the message from below to the top
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+
+    setCongratsVisible(true);
+    setTimeout(() => {
+      setCongratsVisible(false);
+      setIsClickable(true);
+
+      // Reset position after the message disappears
+      Animated.timing(messagePosition, {
+        toValue: -100, // Slide the message back down
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+
+      // Respawn monster with full HP after the animation completes
+      if (selectedMonster) {
+        setCurrentHP(selectedMonster.hp);
+      }
+    }, 2000); // The total duration of 2 seconds
+  };
+
+  const triggerShakeAnimation = () => {
     Animated.sequence([
       Animated.timing(shakeAnimation, {
         toValue: 10, // Shake right
@@ -60,14 +121,7 @@ const Fight = () => {
         duration: 100,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      setCongratsVisible(true); // Show congratulations
-      setTimeout(() => {
-        setCongratsVisible(false);
-        setCurrentHP(500); // Reset dragon HP
-        setIsClickable(true); // Re-enable clicking
-      }, 2000);
-    });
+    ]).start();
   };
 
   const shakeStyle = {
@@ -79,44 +133,76 @@ const Fight = () => {
       <View className="flex-1">
         <Header />
 
-        {/* Dragon and Background */}
+        {/* Monster and Background */}
         <View className="h-1/4">
           <ImageBackground
             source={images.fightbg}
             resizeMode="cover"
             className="flex-1 justify-center items-center"
           >
-            {/* Dragon Image with Clickable and Shaking Animation */}
-            <TouchableOpacity disabled={!isClickable} onPress={fightDragon}>
-              <Animated.View style={shakeStyle}>
-                <Image
-                  source={images.dragon}
-                  className="h-30 w-30"
-                  resizeMode="contain"
-                />
-              </Animated.View>
-            </TouchableOpacity>
+            {/* Display selected monster image */}
+            {selectedMonster && (
+              <TouchableOpacity disabled={!isClickable} onPress={fightMonster}>
+                <Animated.View style={[shakeStyle, { opacity: fadeAnimation }]}>
+                  <Image
+                    source={images[selectedMonster.name.toLowerCase()]} // Display the selected monster's image
+                    className="h-40 w-40"
+                    resizeMode="contain"
+                  />
+                </Animated.View>
+              </TouchableOpacity>
+            )}
 
-            {/* Dragon HP Component */}
-            <HPComponent currentHP={currentHP} />
+            {/* Monster HP Component */}
+            {currentHP !== null && monsterHP !== null && (
+              <HPComponent currentHP={currentHP} monsterHP={monsterHP} />
+            )}
 
             {/* Congratulatory Message */}
             {congratsVisible && (
-              <View
+              <Animated.View
                 style={{
                   position: 'absolute',
-                  bottom: -30,
+                  bottom: messagePosition, // Animated position to slide it up and down
                   left: 0,
                   right: 0,
+                  paddingVertical: 10,
+                  backgroundColor: '#3E2723', // Brown-900 background
                   alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10, // Rounded corners for the "bar" shape
                 }}
               >
-                <Text className="text-green-500 text-lg font-bold">
-                  Congratulations! You defeated the dragon!
+                <Text className="text-white text-lg font-bold">
+                  Congratulations! You defeated {selectedMonster?.name}!
                 </Text>
-              </View>
+              </Animated.View>
             )}
           </ImageBackground>
+        </View>
+
+        {/* Monster selection */}
+        <View className="flex-1 mt-2">
+          <Text className="text-center text-xl font-bold mb-4">Choose a Monster</Text>
+
+          <FlatList
+            data={monsters}
+            renderItem={({ item }) => (
+              <MonsterComponent
+                monster={item}
+                activeMonsterImage={images[item?.name.toLowerCase()]}
+                onFight={(selected) => {
+                  setSelectedMonster(selected);
+                  setCurrentHP(selected.hp); // Reset the HP of the selected monster
+                  setMonsterHP(selected.hp); // Set the max HP (same as initial HP)
+                }}
+              />
+            )}
+            keyExtractor={(item) => item?.id}
+            contentContainerStyle={{
+              paddingBottom: 20,
+            }}
+          />
         </View>
       </View>
     </SafeAreaView>

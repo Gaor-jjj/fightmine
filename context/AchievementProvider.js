@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { fetchAchievements, updateUserAchievements } from '../lib/appwrite';
 import { useGlobalContext } from './GlobalProvider';
 import { useGold } from './GoldProvider';
@@ -15,7 +15,7 @@ export const AchievementProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [totalPoints, setTotalPoints] = useState(0);
 
-  const loadAndCheckAchievements = async () => {
+  const loadAndCheckAchievements = useCallback(async () => {
     console.log('Checking achievements')
     try {
       const fetchedAchievements = await fetchAchievements();
@@ -26,7 +26,7 @@ export const AchievementProvider = ({ children }) => {
 
       let total = 0;
       fetchedAchievements.forEach((achievement) => {
-        if (getAchievementStatus(achievement.id, userCompletedAchievements)) {
+        if (userCompletedAchievements.includes(achievement.id.toString())) {
           total += achievement.points;
         }
       });
@@ -36,48 +36,60 @@ export const AchievementProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const getAchievementStatus = (achievementId, userCompletedAchievements) => {
-    if (userCompletedAchievements.includes(achievementId)) return true;
+  const getAchievementStatus = useCallback((achievementId) => {
+    return completedAchievements.includes(achievementId.toString());
+  }, [completedAchievements]);
 
-    switch (achievementId) {
-      case 1:
-        if (gold >= 1000) return completeAchievement(achievementId);
-        break;
-      case 2:
-        if (gold >= 100000) return completeAchievement(achievementId);
-        break;
-      case 3:
-        if (gold >= 1000000) return completeAchievement(achievementId);
-        break;
-      case 4:
-        if (gold >= 2000000) return completeAchievement(achievementId);
-        break;
-      case 5:
-        if (gold >= 10000000) return completeAchievement(achievementId);
-        break;
-      case 6:
-        if (gold >= 100000000) return completeAchievement(achievementId);
-        break;
-      default:
-        return false;
-    }
-    return false;
-  };
+  const checkAndUpdateAchievements = useCallback(() => {
+    achievements.forEach((achievement) => {
+      if (!getAchievementStatus(achievement.id)) {
+        switch (achievement.id) {
+          case 1:
+            if (gold >= 1000) completeAchievement(achievement.id);
+            break;
+          case 2:
+            if (gold >= 100000) completeAchievement(achievement.id);
+            break;
+          case 3:
+            if (gold >= 1000000) completeAchievement(achievement.id);
+            break;
+          case 4:
+            if (gold >= 2000000) completeAchievement(achievement.id);
+            break;
+          case 5:
+            if (gold >= 10000000) completeAchievement(achievement.id);
+            break;
+          case 6:
+            if (gold >= 100000000) completeAchievement(achievement.id);
+            break;
+        }
+      }
+    });
+  }, [achievements, gold, getAchievementStatus]);
 
-  const completeAchievement = (achievementId) => {
+  const completeAchievement = useCallback((achievementId) => {
     if (user && !completedAchievements.includes(achievementId.toString())) {
       updateUserAchievements(user.$id, achievementId);
-      setCompletedAchievements((prev) => [...prev, achievementId.toString()]);
-      return true;
+      setCompletedAchievements((prev) => {
+        const newCompletedAchievements = [...prev, achievementId.toString()];
+        const achievement = achievements.find(a => a.id === achievementId);
+        if (achievement) {
+          setTotalPoints(prevTotal => prevTotal + achievement.points);
+        }
+        return newCompletedAchievements;
+      });
     }
-    return false;
-  };
+  }, [user, completedAchievements, achievements]);
 
   useEffect(() => {
     loadAndCheckAchievements();
-  }, [gold]);
+  }, [loadAndCheckAchievements]);
+
+  useEffect(() => {
+    checkAndUpdateAchievements();
+  }, [checkAndUpdateAchievements]);
 
   return (
     <AchievementContext.Provider
@@ -93,3 +105,4 @@ export const AchievementProvider = ({ children }) => {
     </AchievementContext.Provider>
   );
 };
+

@@ -1,0 +1,21 @@
+[
+    {
+      "id": 1,
+      "title": "Goblin Mine",
+      "price": 1000,
+      "profit": 1
+    },
+    {
+      "id": 2,
+      "title": "Gnome Mine",
+      "price": 2000,
+      "profit": 2
+    },
+    {
+      "id": 3,
+      "title": "Dwarven Mine",
+      "price": 3000,
+      "profit": 3
+    }
+  ]
+  

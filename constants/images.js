@@ -5,6 +5,10 @@ import fightbg from "../assets/images/fightbg.png"
 import dragon from "../assets/images/dragon.png"
 import shopbg from '../assets/images/shopbg.png'
 import profilebg from '../assets/images/profilebg.png'
+import goblin from "../assets/images/Goblin.png"
+import ogre from "../assets/images/ogre.gif"
+import mech from "../assets/images/mech.png"
+import elderBeast from "../assets/images/elderBeast.png"
 
 export default {
     splash,
@@ -13,5 +17,9 @@ export default {
     fightbg,
     dragon,
     shopbg,
-    profilebg
+    profilebg,
+    goblin,
+    ogre,
+    mech,
+    elderBeast
 }

@@ -30,7 +30,7 @@ const ProfileComponent = () => {
                 <Text className="text-sm font-pixelify text-white">
                     EQUIPPED
                 </Text>
-                <Text>
+                <Text className="text-sm">
 
                 </Text>
             </View>

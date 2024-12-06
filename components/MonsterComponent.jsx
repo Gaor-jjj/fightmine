@@ -50,7 +50,7 @@ const MonsterComponent = ({ monster, activeMonster, onFight }) => {
             <View>
               <Image
                 source={activeMonsterIcon} // Crossed swords image for the active monster
-                className="w-16 h-16"
+                className="w-10 h-10"
                 resizeMode="contain"
               />
             </View>

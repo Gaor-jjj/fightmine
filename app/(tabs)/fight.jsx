@@ -177,7 +177,7 @@ const Fight = () => {
                       images[selectedMonster.name.toLowerCase()] ||
                       images.defaultMonster
                     }
-                    className="h-40 w-40"
+                    className="h-32 w-32"
                     resizeMode="contain"
                   />
                 </Animated.View>
@@ -192,31 +192,28 @@ const Fight = () => {
             {/* Congratulatory Message */}
             {congratsVisible && (
               <Animated.View
-                style={{
-                  position: "absolute",
-                  bottom: messagePosition, // Animated position to slide it up and down
-                  left: 0,
-                  right: 0,
-                  paddingVertical: 10,
-                  backgroundColor: "#3E2723", // Brown-900 background
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 10, // Rounded corners for the "bar" shape
-                }}
-              >
-                <Text className="text-white text-lg font-bold">
-                  Congratulations! You defeated {selectedMonster?.name}!
-                </Text>
-              </Animated.View>
+              style={{
+                position: "absolute",
+                paddingVertical: 10,
+                backgroundColor: "#3E2723", // Brown-900 background
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 10, // Rounded corners for the "bar" shape
+                width: "80%", // Width of the component
+              }}
+            >
+              <Text className="text-white font-pixelify">
+                Congratulations! You defeated {selectedMonster?.name}!
+              </Text>
+            </Animated.View>
+            
+            
             )}
           </ImageBackground>
         </View>
 
         {/* Monster selection */}
-        <View className="flex-1 mt-2">
-          <Text className="text-center text-xl font-bold mb-4">
-            Choose a Monster
-          </Text>
+        <View className="flex-1">
 
           <FlatList
             data={monsters}
@@ -239,6 +236,7 @@ const Fight = () => {
             contentContainerStyle={{
               paddingBottom: 20,
             }}
+            className="p-4"
           />
         </View>
       </View>

@@ -14,9 +14,11 @@ export const AchievementProvider = ({ children }) => {
   const [completedAchievements, setCompletedAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [pendingUpdates, setPendingUpdates] = useState([]);
+
 
   const loadAndCheckAchievements = useCallback(async () => {
-    console.log('Checking achievements')
+    console.log('Checking achievements');
     try {
       const fetchedAchievements = await fetchAchievements();
       setAchievements(fetchedAchievements);
@@ -45,51 +47,91 @@ export const AchievementProvider = ({ children }) => {
   const checkAndUpdateAchievements = useCallback(() => {
     achievements.forEach((achievement) => {
       if (!getAchievementStatus(achievement.id)) {
-        switch (achievement.id) {
-          case 1:
-            if (gold >= 1000) completeAchievement(achievement.id);
-            break;
-          case 2:
-            if (gold >= 100000) completeAchievement(achievement.id);
-            break;
-          case 3:
-            if (gold >= 1000000) completeAchievement(achievement.id);
-            break;
-          case 4:
-            if (gold >= 2000000) completeAchievement(achievement.id);
-            break;
-          case 5:
-            if (gold >= 10000000) completeAchievement(achievement.id);
-            break;
-          case 6:
-            if (gold >= 100000000) completeAchievement(achievement.id);
-            break;
+        // Log the achievement and the gold value
+        console.log(`Checking achievement: ${achievement.id}, Gold: ${gold}`);
+  
+        // Check if the achievement should be completed based on gold
+        if (
+          (achievement.id === 1 && gold >= 1000) ||
+          (achievement.id === 2 && gold >= 100000) ||
+          (achievement.id === 3 && gold >= 1000000) ||
+          (achievement.id === 4 && gold >= 2000000) ||
+          (achievement.id === 5 && gold >= 10000000) ||
+          (achievement.id === 6 && gold >= 100000000)
+        ) {
+          console.log(`Completing achievement with ID: ${achievement.id}`);
+          completeAchievement(achievement.id);
         }
       }
     });
   }, [achievements, gold, getAchievementStatus]);
+  
+  
 
   const completeAchievement = useCallback((achievementId) => {
     if (user && !completedAchievements.includes(achievementId.toString())) {
-      updateUserAchievements(user.$id, achievementId);
       setCompletedAchievements((prev) => {
-        const newCompletedAchievements = [...prev, achievementId.toString()];
+        const newCompletedAchievements = new Set(prev);  // Use Set to avoid duplicates
+        newCompletedAchievements.add(achievementId.toString());
         const achievement = achievements.find(a => a.id === achievementId);
         if (achievement) {
           setTotalPoints(prevTotal => prevTotal + achievement.points);
         }
-        return newCompletedAchievements;
+        return Array.from(newCompletedAchievements);  // Convert Set back to array
       });
+  
+      // Add the completed achievement to pending updates list
+      setPendingUpdates(prev => [...prev, achievementId]);
+    } else {
+      console.log(`Achievement ID ${achievementId} already completed or user is not available.`);
     }
   }, [user, completedAchievements, achievements]);
+  
+  
+  
+  
+
+  // Update completed achievements when gold changes
+  useEffect(() => {
+    if (!loading) {
+      checkAndUpdateAchievements();
+    }
+  }, [gold, loading, checkAndUpdateAchievements]);
 
   useEffect(() => {
     loadAndCheckAchievements();
   }, [loadAndCheckAchievements]);
 
   useEffect(() => {
-    checkAndUpdateAchievements();
-  }, [checkAndUpdateAchievements]);
+    const updateAchievementsSequentially = async () => {
+      if (pendingUpdates.length > 0) {
+        for (let i = 0; i < pendingUpdates.length; i++) {
+          const achievementId = pendingUpdates[i];
+          const achievement = achievements.find(a => a.id.toString() === achievementId.toString());
+  
+          if (achievement) {
+            try {
+              await updateUserAchievements(user.$id, achievement.id);  // Wait for each update to finish
+              console.log(`Achievement ${achievement.id} successfully updated in database.`);
+            } catch (error) {
+              console.error(`Failed to update achievement ${achievement.id} in database:`, error);
+            }
+          }
+        }
+  
+        // Clear the pending updates after all are updated
+        setPendingUpdates([]);
+        console.log("All achievements updated successfully.");
+      }
+    };
+  
+    updateAchievementsSequentially();
+  }, [pendingUpdates, user.$id, achievements]);
+  
+  
+  
+  
+  
 
   return (
     <AchievementContext.Provider
@@ -105,4 +147,3 @@ export const AchievementProvider = ({ children }) => {
     </AchievementContext.Provider>
   );
 };
-

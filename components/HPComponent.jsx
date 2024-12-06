@@ -17,7 +17,7 @@ const HPComponent = ({ currentHP, monsterHP }) => {
           style={{ width: `${hpPercentage}%` }}
         />
         <Text
-          className="absolute w-full text-center font-bold text-black text-xs"
+          className="absolute w-full text-center font-pixelifyB text-black text-xs"
           style={{ top: '50%', transform: [{ translateY: -7 }] }}
         >
           {`${currentHP} / ${monsterHP}`}

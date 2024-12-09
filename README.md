@@ -1,6 +1,6 @@
 # Mobile game "Fightmine"
 
-A React Native application built with Expo, NativeWind, and Appwrite created as part of a programming course assignment. The game takes a alot of insipration from other clicker genre games such as [Cookie Clicker](https://orteil.dashnet.org/cookieclicker/) and [AdVenture Capitalist](https://store.steampowered.com/app/346900/AdVenture_Capitalist/) and is intended to be a simplified version of those games. Development was done in a two person team and the app currently supports (mostly) working authentication, gold generation, achievements and combat system.
+A React Native application built with Expo, NativeWind and Appwrite created as part of a programming course assignment. The game takes a alot of insipration from other clicker genre games such as [Cookie Clicker](https://orteil.dashnet.org/cookieclicker/) and [AdVenture Capitalist](https://store.steampowered.com/app/346900/AdVenture_Capitalist/) and is intended to be a simplified version of those games. Development was done in a two person team and the app currently supports (mostly) working authentication, gold generation, achievements and combat system.
 
 ## Table of Contents
 

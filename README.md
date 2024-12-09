@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+# Mobile game "Fightmine"
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native application built with Expo, NativeWind, and Appwrite created as part of a programming course assignment. The game takes a alot of insipration from other clicker genre games such as [Cookie Clicker](https://orteil.dashnet.org/cookieclicker/) and [AdVenture Capitalist](https://store.steampowered.com/app/346900/AdVenture_Capitalist/) and is intended to be a simplified version of those games. Development was done in a two person team and the app currently supports (mostly) working authentication, gold generation, achievements and combat system.
 
-## Get started
+## Table of Contents
 
-1. Install dependencies
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Project Status](#project-status)
+
+## Features
+
+- **User Authentication:** Login and registration functionality with secure authentication.
+- **Gold Generation:** Generate gold by pressing the giant gold coin or generate passive income by purchasing buildings.
+- **Achievements:** Score achievement points by accumulating certain amounts of gold.
+- **Fight Monsters:** Fight different enemies by tapping on them.
+- **Multiplatform:** Built with React Native it should support both Android and iOS platforms.
+
+## Tech Stack
+
+- **Frontend:**
+  - [React Native](https://reactnative.dev/) (with [Expo](https://expo.dev))
+  - [NativeWind](https://www.nativewind.dev/) for styling
+  - **JavaScript** for all application logic
+- **Backend:**
+  - [Appwrite](https://appwrite.io/) for authentication, database, and storage
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Gaor-jjj/fightmine
+   cd fightmine
+   ```
+
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Set up Appwrite (optional):
+
+   - If you want to set up your own Appwrite backend follow the [Appwrite setup guide](https://appwrite.io/docs/tutorials/react-native/step-3) to configure authentication, storage, and database connections.
+
+4. Run the app:
 
    ```bash
-    npx expo start
+   npx expo start -c
    ```
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Status
+This app is currently not in active development but might be picked up in the future. Current working systems need to fleshed out more and some systems aren't working such as the profile and shop systems.
